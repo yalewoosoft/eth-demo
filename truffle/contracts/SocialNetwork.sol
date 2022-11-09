@@ -1,8 +1,15 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract SocialNetwork {
+    bytes32[] public posts;
     mapping(bytes32 => string) public content;
     mapping(bytes32 => address payable) public sender;
+
+    constructor() {
+        posts.push(0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7);
+        content[0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7] = "ABCDEFGHFSFKSFHKJHFS";
+        sender[0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7] = payable(0x433220a86126eFe2b8C98a723E73eBAd2D0CbaDc);
+    }
 
     event event_NewPost(
         bytes32 post_hash,
@@ -14,8 +21,13 @@ contract SocialNetwork {
         bytes32 post_hash
     );
 
+    function all_posts() public view returns (bytes32[] memory) {
+        return posts;
+    }
+
     function new_post(string calldata post_content) public returns (bytes32) {
         bytes32 post_hash = keccak256(abi.encode(post_content));
+        posts.push(post_hash);
         content[post_hash] = post_content;
         sender[post_hash] = payable(msg.sender);
         emit event_NewPost(post_hash, post_content, msg.sender);
