@@ -14,17 +14,14 @@ function Demo() {
 
   const demo =
     <>
-      <Cta />
       <div className="contract-container">
         <Contract value={value} />
         <ContractBtns setValue={setValue} />
       </div>
-      <Desc />
     </>;
 
   return (
     <div className="demo">
-      <Title />
       {
         !state.artifact ? <NoticeNoArtifact /> :
           !state.contract ? <NoticeWrongNetwork /> :

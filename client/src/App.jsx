@@ -10,13 +10,7 @@ function App() {
     <EthProvider>
       <div id="App" >
         <div className="container">
-          <Intro />
-          <hr />
-          <Setup />
-          <hr />
           <Demo />
-          <hr />
-          <Footer />
         </div>
       </div>
     </EthProvider>
