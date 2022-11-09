@@ -6,8 +6,10 @@ function SNPost({
     sender,
     content,
     upvote_count,
+    is_owner,
     on_upvote,
-    on_reward
+    on_reward,
+    on_funding
 }) {
     const [amount, setAmount] = useState();
     function on_reward_input_change(e) {
@@ -18,6 +20,9 @@ function SNPost({
     }
     function on_upvote_click() {
         on_upvote(post_hash);
+    }
+    function on_funding_click() {
+        on_funding(post_hash);
     }
     return (
         <Card style={{ width: '18rem' }}>
@@ -38,6 +43,12 @@ function SNPost({
                                   onChange={on_reward_input_change}/>
                     <Button variant="primary" onClick={on_reward_click}>Send Reward</Button>
                 </ListGroup.Item>
+                {
+                    is_owner &&
+                    <ListGroup.Item>
+                        <Button variant="warning" onClick={on_funding_click}>Fund this post</Button>
+                    </ListGroup.Item>
+                }
             </ListGroup>
         </Card>
     )

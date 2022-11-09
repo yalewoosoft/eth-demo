@@ -10,6 +10,8 @@ function SNApp() {
     const { state: { contract, accounts, web3 } } = useEth();
     const [posts, setPosts] = useState([]);
     const [is_loaded, setIsLoaded] = useState(false);
+    const [is_owner, setIsOwner] = useState(false);
+    const [balance, setBalance] = useState(0);
     const [new_post_content, setNewPostContent] = useState("");
 
     useEffect(() => {
@@ -31,6 +33,13 @@ function SNApp() {
                     });
                 }
                 console.log(current_posts);
+                // check owner status
+                const owner = await contract.methods.get_owner().call({from: accounts[0]});
+                if (accounts[0] === owner) {
+                    setIsOwner(true);
+                    const local_balance = await contract.methods.get_balance().call({from: accounts[0]});
+                    setBalance(local_balance);
+                }
                 setPosts(current_posts);
                 setIsLoaded(true);
             })();
@@ -124,6 +133,19 @@ function SNApp() {
         console.log(tx);
     }
 
+    const on_funding = async (post_hash) => {
+        const tx = await contract.methods.fund_post(post_hash).send({
+            from: accounts[0],
+        }, (err) => {
+            if (err) {
+                alert(err)
+            } else {
+                alert('Funding success!')
+            }
+        });
+        console.log(tx);
+    }
+
     return (
         <>
             <SNNavBar />
@@ -131,6 +153,14 @@ function SNApp() {
                 <Row>
                     <h1>Posts</h1>
                 </Row>
+                {
+                    is_owner &&
+                    <Row>
+                        <Col>
+                            Contract Balance: {balance} Wei
+                        </Col>
+                    </Row>
+                }
                 <Row>
                     <Col lg={11}>
                         <Form.Control type="text"
@@ -149,8 +179,10 @@ function SNApp() {
                                     content={p.content}
                                     sender={p.sender}
                                     upvote_count={p.upvote_count}
+                                    is_owner={is_owner}
                                     on_reward={on_reward}
                                     on_upvote={on_upvote}
+                                    on_funding={on_funding}
                             />
                         </Col>
                     ))}
