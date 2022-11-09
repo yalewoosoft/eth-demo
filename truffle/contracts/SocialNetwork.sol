@@ -17,9 +17,11 @@ contract SocialNetwork {
         address sender
     );
 
+    /*
     event event_DeletePost(
         bytes32 post_hash
     );
+    */
 
     function all_posts() public view returns (bytes32[] memory) {
         return posts;
@@ -34,6 +36,7 @@ contract SocialNetwork {
         return post_hash;
     }
 
+    /*
     function delete_post(bytes32 post_hash) public {
         require(bytes(content[post_hash]).length > 0);
         require(sender[post_hash] == payable(msg.sender));
@@ -41,6 +44,7 @@ contract SocialNetwork {
         sender[post_hash] = payable(0);
         emit event_DeletePost(post_hash);
     }
+    */
 
     function get_post_by_hash(bytes32 post_hash) public view returns (string memory) {
         require(bytes(content[post_hash]).length > 0);
