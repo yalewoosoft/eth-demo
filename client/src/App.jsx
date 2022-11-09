@@ -1,11 +1,11 @@
 import { EthProvider } from "./contexts/EthContext";
 import "./App.css";
-import SNNavBar from "./components/SocialNetwork/SNNavBar";
+import SNApp from "./components/SocialNetwork/SNApp";
 
 function App() {
   return (
     <EthProvider>
-        <SNNavBar/>
+        <SNApp />
     </EthProvider>
   );
 }
