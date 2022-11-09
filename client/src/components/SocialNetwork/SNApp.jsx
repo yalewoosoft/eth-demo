@@ -9,11 +9,13 @@ import Form from "react-bootstrap/Form";
 function SNApp() {
     const { state: { contract, accounts } } = useEth();
     const [posts, setPosts] = useState([]);
+    const [is_loaded, setIsLoaded] = useState(false);
     const [new_post_content, setNewPostContent] = useState("");
 
     useEffect(() => {
         if (contract) {
             (async function () {
+                // get all posts
                 const current_posts = [];
                 const allpost_hashes = await contract.methods.all_posts().call({from: accounts[0]});
                 console.log(allpost_hashes);
@@ -29,17 +31,43 @@ function SNApp() {
                 }
                 console.log(current_posts);
                 setPosts(current_posts);
+                setIsLoaded(true);
             })();
         }
-    }, [contract, accounts])
+    }, [contract])
+
+    useEffect(() => {
+        if (contract) {
+            let subscription;
+            (async function () {
+                // create event listeners
+                console.log('Creating event listeners');
+                subscription = await contract.events.event_NewPost()
+                    .on("data", (event) => on_new_post_event(event));
+            })();
+            return () => subscription.unsubscribe();
+        }
+    }, [posts, is_loaded])
+
+    const on_new_post_event = async (e) => {
+        setPosts([
+            ...posts,
+            {
+                hash: e.returnValues[0],
+                content: e.returnValues[1],
+                sender: e.returnValues[2],
+                upvote_count: 0
+            }
+        ]);
+    }
 
     const on_new_post_content_changed = async (e) => {
         setNewPostContent(e.target.value);
     }
     const new_post = async () => {
         if (new_post_content) {
-            const post_hash = await contract.methods.new_post(new_post_content).send({from: accounts[0]});
-            console.log(post_hash);
+            const tx = await contract.methods.new_post(new_post_content).send({from: accounts[0]});
+            console.log(tx);
         }
     }
     return (
