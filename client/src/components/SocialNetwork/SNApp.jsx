@@ -22,11 +22,12 @@ function SNApp() {
                 for (const i of allpost_hashes) {
                     const content = await contract.methods.content(i).call({from: accounts[0]});
                     const sender = await contract.methods.sender(i).call({from: accounts[0]});
+                    const upvotes = await contract.methods.upvotes(i).call({from: accounts[0]});
                     current_posts.push({
                         hash: i,
                         content,
                         sender,
-                        upvote_count: 0
+                        upvote_count: upvotes
                     });
                 }
                 console.log(current_posts);
@@ -36,12 +37,13 @@ function SNApp() {
         }
     }, [contract])
 
+    // Event subscriber: NewPost
     useEffect(() => {
         if (contract) {
             let subscription;
             (async function () {
                 // create event listeners
-                console.log('Creating event listeners');
+                console.log('Creating event listeners for NewPost');
                 subscription = await contract.events.event_NewPost()
                     .on("data", (event) => on_new_post_event(event));
             })();
@@ -59,6 +61,35 @@ function SNApp() {
                 upvote_count: 0
             }
         ]);
+    }
+
+    // Event subscriber: Upvote
+    useEffect(() => {
+        if (contract) {
+            let subscription;
+            (async function () {
+                // create event listeners
+                console.log('Creating event listeners for upvote');
+                subscription = await contract.events.event_Upvote()
+                    .on("data", (event) => on_upvote_post_event(event));
+            })();
+            return () => subscription.unsubscribe();
+        }
+    }, [posts, is_loaded])
+
+    const on_upvote_post_event = async (e) => {
+        setPosts(
+          posts.map((i) => {
+              if (i.hash !== e.returnValues[0]) {
+                  return i;
+              } else {
+                  return {
+                      ...i,
+                      upvote_count: e.returnValues[1]
+                  }
+              }
+          })
+        );
     }
 
     const on_new_post_content_changed = async (e) => {
@@ -85,6 +116,14 @@ function SNApp() {
         })
     }
 
+    const on_upvote = async (post_hash) => {
+        const tx = await contract.methods.upvote_post(post_hash).send({
+            from: accounts[0],
+            value: web3.utils.toWei("1", "Gwei")
+        });
+        console.log(tx);
+    }
+
     return (
         <>
             <SNNavBar />
@@ -106,10 +145,12 @@ function SNApp() {
                 <Row>
                     {posts.map(p => (
                         <Col key={p.hash}>
-                            <SNPost content={p.content}
+                            <SNPost post_hash={p.hash}
+                                    content={p.content}
                                     sender={p.sender}
                                     upvote_count={p.upvote_count}
                                     on_reward={on_reward}
+                                    on_upvote={on_upvote}
                             />
                         </Col>
                     ))}

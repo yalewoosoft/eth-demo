@@ -2,6 +2,7 @@ import {Button, Card, ListGroup} from "react-bootstrap";
 import Form from "react-bootstrap/Form"
 import {useState} from "react";
 function SNPost({
+    post_hash,
     sender,
     content,
     upvote_count,
@@ -15,6 +16,9 @@ function SNPost({
     function on_reward_click() {
         on_reward(sender, amount);
     }
+    function on_upvote_click() {
+        on_upvote(post_hash);
+    }
     return (
         <Card style={{ width: '18rem' }}>
             <Card.Header>{'From: ' + sender.substring(0,7)}</Card.Header>
@@ -25,7 +29,7 @@ function SNPost({
             </Card.Body>
             <ListGroup>
                 <ListGroup.Item>
-                    <Button variant="info">Upvote: {upvote_count}</Button>
+                    <Button variant="info" onClick={on_upvote_click}>Upvote: {upvote_count}</Button>
                 </ListGroup.Item>
                 <ListGroup.Item>
                     <Form.Control type="text"
