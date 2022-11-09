@@ -7,7 +7,7 @@ import {useEffect, useState} from "react";
 import Form from "react-bootstrap/Form";
 
 function SNApp() {
-    const { state: { contract, accounts } } = useEth();
+    const { state: { contract, accounts, web3 } } = useEth();
     const [posts, setPosts] = useState([]);
     const [is_loaded, setIsLoaded] = useState(false);
     const [new_post_content, setNewPostContent] = useState("");
@@ -70,6 +70,21 @@ function SNApp() {
             console.log(tx);
         }
     }
+
+    const on_reward = async (sender, amount) => {
+        web3.eth.sendTransaction({
+            to: sender,
+            from: accounts[0],
+            value: web3.utils.toWei(amount, "ether")
+        }, (err) => {
+            if (err) {
+                alert(err)
+            } else {
+                alert('Reward success!')
+            }
+        })
+    }
+
     return (
         <>
             <SNNavBar />
@@ -91,7 +106,11 @@ function SNApp() {
                 <Row>
                     {posts.map(p => (
                         <Col key={p.hash}>
-                            <SNPost content={p.content} sender={p.sender} upvote_count={p.upvote_count} />
+                            <SNPost content={p.content}
+                                    sender={p.sender}
+                                    upvote_count={p.upvote_count}
+                                    on_reward={on_reward}
+                            />
                         </Col>
                     ))}
                 </Row>
