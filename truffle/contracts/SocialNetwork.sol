@@ -1,12 +1,19 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract SocialNetwork {
+    address payable private owner;
     bytes32[] public posts;
     mapping(bytes32 => string) public content;
     mapping(bytes32 => address payable) public sender;
     mapping(bytes32 => uint64) public upvotes;
 
+    modifier isOwner() {
+        require(msg.sender == owner, "Caller is not owner");
+        _;
+    }
+
     constructor() {
+        owner = payable(0x433220a86126eFe2b8C98a723E73eBAd2D0CbaDc);
         posts.push(0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7);
         content[0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7] = "ABCDEFGHFSFKSFHKJHFS";
         sender[0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7] = payable(0x433220a86126eFe2b8C98a723E73eBAd2D0CbaDc);
@@ -51,6 +58,10 @@ contract SocialNetwork {
         emit event_Upvote(post_hash, upvotes[post_hash]);
     }
 
+    function fund_post(bytes32 post_hash) public isOwner {
+        require(address(this).balance > 0);
+        payable(sender[post_hash]).transfer(address(this).balance);
+    }
     /*
     function delete_post(bytes32 post_hash) public {
         require(bytes(content[post_hash]).length > 0);
@@ -70,4 +81,14 @@ contract SocialNetwork {
         require(bytes(content[post_hash]).length > 0);
         return sender[post_hash];
     }
+
+    function get_owner() public view returns (address) {
+        return owner;
+    }
+
+    function get_balance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    receive() external payable {}
 }
