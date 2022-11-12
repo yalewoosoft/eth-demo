@@ -11,7 +11,7 @@ function SNPost({
     on_reward,
     on_funding
 }) {
-    const [amount, setAmount] = useState();
+    const [amount, setAmount] = useState("");
     function on_reward_input_change(e) {
         setAmount(e.target.value);
     }
