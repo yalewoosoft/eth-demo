@@ -1,4 +1,3 @@
-import SNNavBar from "./SNNavBar";
 import Container from "react-bootstrap/Container";
 import {Button, CardGroup, Col, Row} from "react-bootstrap";
 import SNPost from "./SNPost";
@@ -15,9 +14,11 @@ function SNApp() {
     const [new_post_content, setNewPostContent] = useState("");
 
     useEffect(() => {
+        console.log("UseEffect initial triggered");
         if (contract) {
             (async function () {
                 // get all posts
+                console.log("Contract loaded; starting blockchain loading")
                 const current_posts = [];
                 const allpost_hashes = await contract.methods.all_posts().call({from: accounts[0]});
                 console.log(allpost_hashes);
@@ -44,7 +45,7 @@ function SNApp() {
                 setIsLoaded(true);
             })();
         }
-    }, [contract])
+    }, [contract, accounts])
 
     // Event subscriber: NewPost
     useEffect(() => {
@@ -56,7 +57,12 @@ function SNApp() {
                 subscription = await contract.events.event_NewPost()
                     .on("data", (event) => on_new_post_event(event));
             })();
-            return () => subscription.unsubscribe();
+            return () => {
+                if (subscription) {
+                    console.log("Clean up event listeners NewPost");
+                    subscription.unsubscribe();
+                }
+            }
         }
     }, [posts, is_loaded])
 
@@ -82,7 +88,12 @@ function SNApp() {
                 subscription = await contract.events.event_Upvote()
                     .on("data", (event) => on_upvote_post_event(event));
             })();
-            return () => subscription.unsubscribe();
+            return () => {
+                if (subscription) {
+                    console.log("Clean up event listeners Upvote");
+                    subscription.unsubscribe();
+                }
+            }
         }
     }, [posts, is_loaded])
 
@@ -148,7 +159,6 @@ function SNApp() {
 
     return (
         <>
-            <SNNavBar />
             <Container>
                 <Row>
                     <h1>Posts</h1>

@@ -10,7 +10,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "truffle test",
-    "ganache": "ganache --wallet.seed 1234"
+    "ganache": "ganache --wallet.seed 1234 --verbose"
   },
   "author": "",
   "license": "MIT"
