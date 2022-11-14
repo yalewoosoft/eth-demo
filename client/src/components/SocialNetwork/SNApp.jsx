@@ -20,14 +20,12 @@ function SNApp() {
                 const allpost_hashes = await contract.methods.all_posts().call({from: accounts[0]});
                 console.log(allpost_hashes);
                 for (const i of allpost_hashes) {
-                    const content = await contract.methods.content(i).call({from: accounts[0]});
-                    const sender = await contract.methods.sender(i).call({from: accounts[0]});
-                    const upvotes = await contract.methods.upvotes(i).call({from: accounts[0]});
+                    const post = await contract.methods.posts(i).call({from: accounts[0]});
                     current_posts.push({
                         hash: i,
-                        content,
-                        sender,
-                        upvote_count: upvotes
+                        content: post.content,
+                        sender: post.sender,
+                        upvote_count: post.upvotes,
                     });
                 }
                 console.log(current_posts);
