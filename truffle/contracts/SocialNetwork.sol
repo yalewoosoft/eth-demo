@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 contract SocialNetwork {
     struct Post {
         string content;
-        address payable sender;
+        address sender;
         uint64 upvotes;
         bool exists;
     }
@@ -13,6 +13,7 @@ contract SocialNetwork {
     bytes32[] public posts_hash;
     mapping(bytes32 => Post) public posts;
     mapping(address => uint64) public post_count;
+    mapping(address => address[]) public following;
 
     modifier isOwner() {
         require(msg.sender == owner, "Caller is not owner");
@@ -42,6 +43,12 @@ contract SocialNetwork {
         uint64 upvotes
     );
 
+    event event_Following(
+        address from,
+        address to,
+        bool follow
+    );
+
 
     function all_posts() public view returns (bytes32[] memory) {
         return posts_hash;
@@ -51,11 +58,11 @@ contract SocialNetwork {
         post_count[msg.sender] += 1;
         bytes32 post_hash = keccak256(abi.encode(post_content, msg.sender));
         posts_hash.push(post_hash);
-        posts[post_hash] = Post({
-        content: post_content,
-        sender: payable(msg.sender),
-        upvotes: 0,
-        exists: true
+            posts[post_hash] = Post({
+            content: post_content,
+            sender: payable(msg.sender),
+            upvotes: 0,
+            exists: true
         });
         emit event_NewPost(post_hash, post_content, msg.sender);
         return post_hash;
@@ -71,6 +78,44 @@ contract SocialNetwork {
     function fund_post(bytes32 post_hash) public isOwner {
         require(address(this).balance > 0);
         payable(posts[post_hash].sender).transfer(address(this).balance);
+    }
+
+    function add_following(address to) public {
+        following[msg.sender].push(to);
+        emit event_Following(msg.sender, to, true);
+    }
+
+    function get_following(address from) public view returns (address[] memory) {
+        return following[from];
+    }
+
+    function is_following(address to) public view returns (bool) {
+        bool flag = false;
+        uint256 array_length = following[msg.sender].length;
+        for (uint256 i = 0; i < array_length; i++) {
+            if (following[msg.sender][i] == to) {
+                // found
+                flag = true;
+            }
+        }
+        return flag;
+    }
+
+    function delete_following(address to) public {
+        bool flag = false;
+        uint256 array_length = following[msg.sender].length;
+        for (uint256 i = 0; i < array_length; i++) {
+            if (following[msg.sender][i] == to) {
+                // found
+                flag = true;
+                // delete element (set to 0)
+                delete following[msg.sender][i];
+                // move last to i
+                following[msg.sender][i] = following[msg.sender][array_length - 1];
+                emit event_Following(msg.sender, to, false);
+            }
+        }
+        require(flag, "Cannot delete unexistent following!");
     }
 
     function get_owner() public view returns (address) {
