@@ -9,7 +9,7 @@ contract SocialNetwork {
         bool exists;
     }
 
-    address payable private owner;
+    address private owner;
     bytes32[] public posts_hash;
     mapping(bytes32 => Post) public posts;
     mapping(address => uint64) public post_count;
@@ -20,7 +20,15 @@ contract SocialNetwork {
     }
 
     constructor() {
-
+        owner = msg.sender;
+        bytes32 initial_post = 0xa0ec3c07d50d3c405f489573fa83a795402f6fc40a71e774564b8ac6bdc968f3;
+        posts_hash.push(initial_post);
+        posts[initial_post] = Post({
+        content: "AAAA",
+        sender: payable(msg.sender),
+        upvotes: 0,
+        exists: true
+        });
     }
 
     event event_NewPost(
