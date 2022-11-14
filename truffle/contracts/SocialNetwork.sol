@@ -14,12 +14,14 @@ contract SocialNetwork {
     mapping(address => uint64) post_count;
 
     constructor() {
-        /*
-        posts.push(0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7);
-        content[0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7] = "ABCDEFGHFSFKSFHKJHFS";
-        sender[0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7] = payable(0x433220a86126eFe2b8C98a723E73eBAd2D0CbaDc);
-        upvotes[0xe746d9cf4809cb70939dde3a173485059e56117bd429912342bb47663d464ef7] = 0;
-        */
+        bytes32 initial_post = 0xa0ec3c07d50d3c405f489573fa83a795402f6fc40a71e774564b8ac6bdc968f3;
+        posts_hash.push(initial_post);
+        posts[initial_post] = Post({
+            content: "AAAA",
+            sender: payable(msg.sender),
+            upvotes: 0,
+            exists: true
+        });
     }
 
     event event_NewPost(
