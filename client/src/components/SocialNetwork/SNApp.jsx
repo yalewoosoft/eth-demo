@@ -8,7 +8,6 @@ import Form from "react-bootstrap/Form";
 function SNApp() {
     const { state: { contract, accounts, web3 } } = useEth();
     const [posts, setPosts] = useState([]);
-    const [is_loaded, setIsLoaded] = useState(false);
     const [is_owner, setIsOwner] = useState(false);
     const [balance, setBalance] = useState(0);
     const [new_post_content, setNewPostContent] = useState("");
@@ -17,6 +16,7 @@ function SNApp() {
         console.log("UseEffect initial triggered");
         if (contract) {
             (async function () {
+                console.log("Current contract: ", contract);
                 // get all posts
                 console.log("Contract loaded; starting blockchain loading")
                 const current_posts = [];
@@ -40,7 +40,6 @@ function SNApp() {
                     setBalance(local_balance);
                 }
                 setPosts(current_posts);
-                setIsLoaded(true);
             })();
         }
     }, [contract, accounts])
@@ -62,7 +61,7 @@ function SNApp() {
                 }
             }
         }
-    }, [posts, is_loaded])
+    }, [posts, contract])
 
     const on_new_post_event = async (e) => {
         setPosts([
@@ -93,7 +92,7 @@ function SNApp() {
                 }
             }
         }
-    }, [posts, is_loaded])
+    }, [posts, contract])
 
     const on_upvote_post_event = async (e) => {
         setPosts(
