@@ -112,7 +112,10 @@ contract SocialNetwork {
                 delete following[msg.sender][i];
                 // move last to i
                 following[msg.sender][i] = following[msg.sender][array_length - 1];
+                // remove last element
+                following[msg.sender].pop();
                 emit event_Following(msg.sender, to, false);
+                break;
             }
         }
         require(flag, "Cannot delete unexistent following!");
