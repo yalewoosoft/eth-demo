@@ -5,9 +5,12 @@ import useEth from "../../contexts/EthContext/useEth";
 import {useEffect, useState} from "react";
 import Form from "react-bootstrap/Form";
 
-function SNApp() {
+function SNApp({
+    only_following
+}) {
     const { state: { contract, accounts, web3 } } = useEth();
     const [posts, setPosts] = useState([]);
+    const [following, setFollowing] = useState([]);
     const [is_owner, setIsOwner] = useState(false);
     const [balance, setBalance] = useState(0);
     const [new_post_content, setNewPostContent] = useState("");
@@ -22,6 +25,9 @@ function SNApp() {
                 const current_posts = [];
                 const allpost_hashes = await contract.methods.all_posts().call({from: accounts[0]});
                 console.log(allpost_hashes);
+                // Retrieve following list
+                const following = await contract.methods.get_following(accounts[0]).call({from: accounts[0]});
+                setFollowing(following);
                 for (const i of allpost_hashes) {
                     const post = await contract.methods.posts(i).call({from: accounts[0]});
                     current_posts.push({
@@ -42,7 +48,7 @@ function SNApp() {
                 setPosts(current_posts);
             })();
         }
-    }, [contract, accounts])
+    }, [contract, accounts, only_following])
 
     // Event subscriber: NewPost
     useEffect(() => {
@@ -179,21 +185,33 @@ function SNApp() {
                         <Button variant="primary" onClick={new_post}>Send</Button>
                     </Col>
                 </Row>
-                <Row>
-                    {posts.map(p => (
-                        <Col key={p.hash}>
-                            <SNPost post_hash={p.hash}
-                                    content={p.content}
-                                    sender={p.sender}
-                                    upvote_count={p.upvote_count}
-                                    is_owner={is_owner}
-                                    on_reward={on_reward}
-                                    on_upvote={on_upvote}
-                                    on_funding={on_funding}
-                            />
-                        </Col>
-                    ))}
-                </Row>
+                {
+                    (function() {
+                        let post_to_render;
+                        if (only_following) {
+                            post_to_render = posts.filter(p => following.includes(p.sender));
+                        } else {
+                            post_to_render = posts;
+                        }
+                        return (
+                            <Row>
+                                {post_to_render.map(p => (
+                                    <Col key={p.hash}>
+                                        <SNPost post_hash={p.hash}
+                                                content={p.content}
+                                                sender={p.sender}
+                                                upvote_count={p.upvote_count}
+                                                is_owner={is_owner}
+                                                on_reward={on_reward}
+                                                on_upvote={on_upvote}
+                                                on_funding={on_funding}
+                                        />
+                                    </Col>
+                                ))}
+                            </Row>
+                        )
+                    })()
+                }
             </Container>
         </>
     );

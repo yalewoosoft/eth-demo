@@ -2,8 +2,7 @@ import { EthProvider } from "./contexts/EthContext";
 import "./App.css";
 import SNApp from "./components/SocialNetwork/SNApp";
 import SNNavBar from "./components/SocialNetwork/SNNavBar";
-import {createBrowserRouter, createHashRouter, Outlet, RouterProvider} from "react-router-dom";
-import SNFollowingPosts from "./components/SocialNetwork/SNFollowingPosts";
+import {createHashRouter, Outlet, RouterProvider} from "react-router-dom";
 import SNFollowing from "./components/SocialNetwork/SNFollowing";
 import SNProfile, {loader as addressLoader} from "./components/SocialNetwork/SNProfile";
 const HeaderLayout = () => (
@@ -20,11 +19,11 @@ const router = createHashRouter([
         children: [
             {
                 path: "/",
-                element: <SNApp/>,
+                element: <SNApp only_following={false}/>,
             },
             {
                 path: "/following_posts",
-                element: <SNFollowingPosts />
+                element: <SNApp only_following={true}/>
             },
             {
                 path: "/following",
