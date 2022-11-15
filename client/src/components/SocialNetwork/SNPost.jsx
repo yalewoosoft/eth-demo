@@ -1,6 +1,7 @@
 import {Button, Card, ListGroup} from "react-bootstrap";
 import Form from "react-bootstrap/Form"
 import {useState} from "react";
+import {Link} from "react-router-dom";
 function SNPost({
     post_hash,
     sender,
@@ -26,7 +27,12 @@ function SNPost({
     }
     return (
         <Card style={{ width: '18rem' }}>
-            <Card.Header>{'From: ' + sender.substring(0,7)}</Card.Header>
+            <Card.Header>
+                {'From: ' }
+                <Link to={`profile/${sender}`}>
+                    { sender.substring(0, 8) }
+                </Link>
+            </Card.Header>
             <Card.Body>
                 <Card.Text>
                     { content }
@@ -36,13 +42,16 @@ function SNPost({
                 <ListGroup.Item>
                     <Button variant="info" onClick={on_upvote_click}>Upvote: {upvote_count}</Button>
                 </ListGroup.Item>
-                <ListGroup.Item>
-                    <Form.Control type="text"
-                                  placeholder="Amount"
-                                  value={amount}
-                                  onChange={on_reward_input_change}/>
-                    <Button variant="primary" onClick={on_reward_click}>Send Reward</Button>
-                </ListGroup.Item>
+                {
+                    on_reward &&
+                    <ListGroup.Item>
+                        <Form.Control type="text"
+                                      placeholder="Amount"
+                                      value={amount}
+                                      onChange={on_reward_input_change}/>
+                        <Button variant="primary" onClick={on_reward_click}>Send Reward</Button>
+                    </ListGroup.Item>
+                }
                 {
                     is_owner &&
                     <ListGroup.Item>
