@@ -164,7 +164,11 @@ function SNApp({
         <>
             <Container>
                 <Row>
-                    <h1>Posts</h1>
+                    <h1>
+                        {
+                            only_following ? "Posts by followers" : "All Posts"
+                        }
+                    </h1>
                 </Row>
                 {
                     is_owner &&

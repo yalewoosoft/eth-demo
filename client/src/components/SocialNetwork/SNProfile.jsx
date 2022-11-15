@@ -87,11 +87,58 @@ function SNProfile() {
         console.log(tx);
     }
 
+    // Event subscriber: Following
+    useEffect(() => {
+        if (contract) {
+            let subscription;
+            (async function () {
+                // create event listeners
+                console.log('Creating event listeners for Follwoing');
+                subscription = await contract.events.event_Following()
+                    .on("data", (event) => on_following_event(event));
+            })();
+            return () => {
+                if (subscription) {
+                    console.log("Clean up event listeners Upvote");
+                    subscription.unsubscribe();
+                }
+            }
+        }
+    }, [contract])
+
+    const on_following_event = async (e) => {
+        if (e.returnValues[0] === accounts[0] && e.returnValues[1] === address) {
+            setFollowing(e.returnValues[2]);
+        }
+    }
+
+    const on_following = async (e) => {
+        let tx;
+        if (following) {
+            tx = await contract.methods.delete_following(address).send({
+                from: accounts[0],
+            });
+        } else {
+            tx = await contract.methods.add_following(address).send({
+                from: accounts[0],
+            });
+        }
+        console.log(tx);
+    }
+
     return (
         <Container>
             <Row>
-                <h1>Profile: {address.toString().substring(0, 8)}</h1>
-
+                <Col>
+                    <h1>Profile: {address.toString().substring(0, 8)}</h1>
+                </Col>
+                <Col lg={3}>
+                    <Button variant="info" onClick={on_following}>
+                        {
+                            following ? "Unfollow" : "Follow"
+                        }
+                    </Button>
+                </Col>
             </Row>
             <Row>
                 {

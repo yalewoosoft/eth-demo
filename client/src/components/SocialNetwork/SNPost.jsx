@@ -29,7 +29,7 @@ function SNPost({
         <Card style={{ width: '18rem' }}>
             <Card.Header>
                 {'From: ' }
-                <Link to={`profile/${sender}`}>
+                <Link to={`/profile/${sender}`}>
                     { sender.substring(0, 8) }
                 </Link>
             </Card.Header>
