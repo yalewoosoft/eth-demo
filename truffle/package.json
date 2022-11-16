@@ -4,13 +4,15 @@
   "description": "Truffle project with SimpleStorage contract",
   "main": "truffle-config.js",
   "dependencies": {
+    "@remix-project/remixd": "^0.6.8",
     "@truffle/hdwallet-provider": "^2.0.10",
     "dotenv": "^16.0.3"
   },
   "devDependencies": {},
   "scripts": {
     "test": "truffle test",
-    "ganache": "ganache --wallet.seed 1234 --verbose"
+    "ganache": "ganache --wallet.seed 1234 --verbose",
+    "remixd": "npx remixd"
   },
   "author": "",
   "license": "MIT"
