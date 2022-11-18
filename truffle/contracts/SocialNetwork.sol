@@ -25,10 +25,10 @@ contract SocialNetwork {
         bytes32 initial_post = 0xa0ec3c07d50d3c405f489573fa83a795402f6fc40a71e774564b8ac6bdc968f3;
         posts_hash.push(initial_post);
         posts[initial_post] = Post({
-        content: "AAAA",
-        sender: payable(msg.sender),
-        upvotes: 0,
-        exists: true
+            content: "AAAA",
+            sender: msg.sender,
+            upvotes: 0,
+            exists: true
         });
     }
 
@@ -56,11 +56,11 @@ contract SocialNetwork {
 
     function new_post(string calldata post_content) public returns (bytes32) {
         post_count[msg.sender] += 1;
-        bytes32 post_hash = keccak256(abi.encode(post_content, msg.sender));
+        bytes32 post_hash = keccak256(abi.encode(post_content, post_count[msg.sender]));
         posts_hash.push(post_hash);
-            posts[post_hash] = Post({
+        posts[post_hash] = Post({
             content: post_content,
-            sender: payable(msg.sender),
+            sender: msg.sender,
             upvotes: 0,
             exists: true
         });
@@ -96,6 +96,7 @@ contract SocialNetwork {
             if (following[msg.sender][i] == to) {
                 // found
                 flag = true;
+                break;
             }
         }
         return flag;
